@@ -15,8 +15,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl \
 COPY *.java ./
 
 # Copy frontend
-# Copy frontend
-COPY index.html ./web/index.html
+COPY index.html ./index.html
 COPY style.css ./web/style.css
 COPY app.js ./web/app.js
 
