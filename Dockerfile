@@ -16,7 +16,7 @@ COPY *.java ./
 
 # Copy frontend
 COPY index.html ./index.html
-COPY styles ./web/style
+COPY style ./web/style
 
 # Compile application
 RUN mkdir -p out data web \
