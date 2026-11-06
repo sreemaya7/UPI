@@ -15,8 +15,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl \
 COPY *.java ./
 
 # Copy frontend
-COPY index.html ./index.html
-COPY style.css ./web/style.css
+# Copy frontend
+COPY index.html ./web/index.html
+COPY styles ./web/styles
+COPY app.js ./web/app.js
 
 # Compile application
 RUN mkdir -p out data web \
