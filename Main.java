@@ -827,7 +827,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         System.setProperty("java.awt.headless", "true");
-        Db.open(System.getenv().getOrDefault("DB_PATH", "upi.db"));
+        Db.open();
         Security.init(Db.loadSecret());
 
         Path web = Path.of(System.getenv().getOrDefault("WEB_DIR", "web"));
