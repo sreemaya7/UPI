@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JavaBank Pay: Secure UPI Simulator</title>
+<meta name="description" content="A secure UPI payment simulator with AI payments, contact name resolution, QR codes, split bills and spending insights. All money is fake.">
+<meta name="referrer" content="no-referrer">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%8F%A6%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<!-- ============================ SIGN IN / REGISTER ============================ -->
+<main id="view-auth" class="auth">
+  <section class="auth-left">
+    <div class="logo" aria-hidden="true">🏦</div>
+    <h1>JavaBank Pay</h1>
+    <p class="sub">Secure UPI simulator</p>
+    <ul>
+      <li>Pay by typing: "Pay 300 to Priya for lunch"</li>
+      <li>Names, not numbers: your contacts resolve to UPI IDs</li>
+      <li>Time-limited QR codes you can show or scan</li>
+      <li>Split bills, undo within 30 seconds, spending insights</li>
+      <li>Every payment needs your UPI PIN</li>
+    </ul>
+  </section>
+  <section class="auth-right">
+    <div class="auth-box">
+      <form id="login-form" data-form="login" autocomplete="on">
+        <h2>Welcome back</h2>
+        <p class="lead">Sign in with your mobile number or account number.</p>
+        <div class="field"><label for="login-id">Mobile or account number</label><input id="login-id" name="username" autocomplete="username" required maxlength="30"></div>
+        <div class="field"><label for="login-pw">Password</label><input id="login-pw" name="password" type="password" autocomplete="current-password" required maxlength="200"></div>
+        <button class="btn btn-gold btn-block" type="submit">Sign in</button>
+        <p class="switch">New here? <button type="button" class="link" data-action="show-register">Create an account</button></p>
+      </form>
+
+      <form id="register-form" data-form="register" hidden autocomplete="on">
+        <h2>Open an account</h2>
+        <p class="lead">You start with ₹1,000 of simulated money.</p>
+        <div class="field"><label for="reg-name">Full name</label><input id="reg-name" autocomplete="name" required maxlength="50"></div>
+        <div class="field"><label for="reg-phone">Mobile number</label><input id="reg-phone" inputmode="numeric" autocomplete="tel-national" placeholder="10 digits" required maxlength="10">
+          <p class="hint">Your UPI ID will be mobile@javapay</p></div>
+        <div class="field"><label for="reg-pw">Password</label><input id="reg-pw" type="password" autocomplete="new-password" required minlength="8" maxlength="100">
+          <p class="hint">At least 8 characters, with a letter and a number.</p></div>
+        <div class="field"><label for="reg-pin">UPI PIN</label><input id="reg-pin" type="password" inputmode="numeric" pattern="[0-9]*" autocomplete="off" required minlength="4" maxlength="6">
+          <p class="hint">4 to 6 digits. You will enter it to approve every payment.</p></div>
+        <button class="btn btn-gold btn-block" type="submit">Create account</button>
+        <p class="switch">Already have an account? <button type="button" class="link" data-action="show-login">Sign in</button></p>
+      </form>
+      <p class="sim-note">Simulation only. No real money, bank or UPI network is involved.</p>
+    </div>
+  </section>
+</main>
+
+<!-- ============================ APP ============================ -->
+<div id="view-app" hidden>
+  <div class="sim-banner">Simulation mode: all money here is fake</div>
+  <header class="topbar">
+    <div class="brand">JavaBank Pay<i></i></div>
+    <nav class="tabs" aria-label="Main">
+      <button class="tab" data-action="tab" data-tab="home">Home</button>
+      <button class="tab" data-action="tab" data-tab="pay">Pay</button>
+      <button class="tab" data-action="tab" data-tab="qr">QR</button>
+      <button class="tab" data-action="tab" data-tab="contacts">Contacts</button>
+      <button class="tab" data-action="tab" data-tab="split">Split</button>
+      <button class="tab" data-action="tab" data-tab="insights">Insights</button>
+      <button class="tab" data-action="tab" data-tab="history">History</button>
+    </nav>
+    <div class="who">
+      <div class="avatar" id="nav-avatar" aria-hidden="true">--</div>
+      <span class="name" id="nav-name" style="color:#fff;font-size:14px"></span>
+      <button class="btn btn-sm" data-action="open-settings">Settings</button>
+      <button class="btn btn-sm" data-action="logout">Sign out</button>
+    </div>
+  </header>
+
+  <!-- ---------- HOME ---------- -->
+  <section class="page" id="tab-home" hidden>
+    <div class="hero">
+      <div>
+        <h2 id="home-name">Hello</h2>
+        <p class="meta" id="home-date"></p>
+      </div>
+      <div>
+        <div class="bal-label">Wallet balance</div>
+        <div class="bal" id="home-bal">₹0.00</div>
+        <div class="upi"><span class="mono" id="home-upi"></span><button class="copy" data-action="copy-upi">Copy</button></div>
+      </div>
+    </div>
+    <div class="tiles">
+      <button class="tile" data-action="tab" data-tab="pay"><span class="ico">✨</span><b>Pay with AI</b><span class="d">Type it, confirm it</span></button>
+      <button class="tile" data-action="tab" data-tab="qr"><span class="ico">▦</span><b>Scan / Show QR</b><span class="d">Time-limited codes</span></button>
+      <button class="tile" data-action="tab" data-tab="split"><span class="ico">➗</span><b>Split a bill</b><span class="d">Share the cost</span></button>
+      <button class="tile" data-action="open-add"><span class="ico">＋</span><b>Add money</b><span class="d">Simulated top-up</span></button>
+      <button class="tile" data-action="open-withdraw"><span class="ico">↗</span><b>Withdraw</b><span class="d">Needs your PIN</span></button>
+    </div>
+    <div class="grid3" style="margin-bottom:22px">
+      <div class="stat"><div class="l">Spent this month</div><div class="v" id="stat-spent">₹0</div></div>
+      <div class="stat"><div class="l">Received this month</div><div class="v" id="stat-received">₹0</div></div>
+      <div class="stat"><div class="l">Flagged payments</div><div class="v" id="stat-flagged">0</div></div>
+    </div>
+    <div id="home-budget"></div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <h3 style="margin:0">Recent activity</h3>
+        <button class="btn btn-ghost btn-sm" data-action="tab" data-tab="history">View all</button>
+      </div>
+      <ul class="list" id="home-recent"></ul>
+    </div>
+  </section>
+
+  <!-- ---------- PAY ---------- -->
+  <section class="page" id="tab-pay" hidden>
+    <h2>Pay someone</h2>
+    <p class="lead">Describe the payment, or fill the form. Nothing moves until you approve it with your UPI PIN.</p>
+    <div class="ai-bar">
+      <h3>✨ Pay with AI</h3>
+      <p>Names are matched against your contacts. The AI only suggests; you always confirm.</p>
+      <form data-form="ai" autocomplete="off">
+        <input id="ai-input" placeholder='Try: Pay 300 to Priya for lunch' maxlength="200" aria-label="Describe a payment">
+        <button class="btn btn-gold" type="submit">Go</button>
+      </form>
+      <div class="chips">
+        <button class="chip" type="button" data-action="ai-example" data-text="Pay 150 to Arun for tea">Pay 150 to Arun for tea</button>
+        <button class="chip" type="button" data-action="ai-example" data-text="Send 500 to Meena for rent">Send 500 to Meena for rent</button>
+        <button class="chip" type="button" data-action="ai-example" data-text="Split 900 among me, Arun, Meena for dinner">Split 900 among me, Arun, Meena</button>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <h3>Or pay manually</h3>
+        <form data-form="pay-manual" autocomplete="off">
+          <div class="field"><label for="pay-who">Pay to</label><select id="pay-who"></select></div>
+          <div class="field" id="pay-upi-wrap" hidden><label for="pay-upi">UPI ID</label><input id="pay-upi" placeholder="9876543210@javapay" maxlength="60"></div>
+          <div class="row">
+            <div class="field"><label for="pay-amount">Amount (₹)</label><input id="pay-amount" type="number" inputmode="decimal" min="0.01" step="0.01" required></div>
+            <div class="field"><label for="pay-note">Note</label><input id="pay-note" maxlength="60" placeholder="lunch, rent, auto…"></div>
+          </div>
+          <button class="btn btn-navy btn-block" type="submit">Review payment</button>
+        </form>
+      </div>
+      <div><div id="pay-stage" class="stage" style="margin-top:0" aria-live="polite"></div></div>
+    </div>
+  </section>
+
+  <!-- ---------- QR ---------- -->
+  <section class="page" id="tab-qr" hidden>
+    <h2>QR payments</h2>
+    <p class="lead">Show a code to get paid, or scan one to pay. Codes with an amount expire and work only once.</p>
+    <div class="grid2">
+      <div class="card">
+        <h3>Receive: my QR</h3>
+        <form data-form="qr-create" autocomplete="off">
+          <div class="row">
+            <div class="field"><label for="qr-amount">Amount (optional)</label><input id="qr-amount" type="number" inputmode="decimal" min="0.01" step="0.01" placeholder="Any amount"></div>
+            <div class="field"><label for="qr-ttl">Valid for</label>
+              <select id="qr-ttl"><option value="5">5 minutes</option><option value="15">15 minutes</option><option value="60">1 hour</option><option value="0">Permanent (no amount)</option></select></div>
+          </div>
+          <div class="field"><label for="qr-note">Note (optional)</label><input id="qr-note" maxlength="60" placeholder="book fee"></div>
+          <button class="btn btn-navy btn-block" type="submit">Generate QR</button>
+        </form>
+        <div id="qr-out" class="stage" aria-live="polite"></div>
+      </div>
+      <div class="card">
+        <h3>Pay: scan a QR</h3>
+        <div id="scan-stage"></div>
+        <div class="actions" style="margin-bottom:14px">
+          <button class="btn btn-navy" data-action="scan-start" id="scan-start">Start camera</button>
+          <button class="btn btn-ghost" data-action="scan-stop" id="scan-stop" hidden>Stop camera</button>
+          <label class="btn btn-ghost" for="scan-file" style="margin:0">Upload QR image</label>
+          <input id="scan-file" type="file" accept="image/*" hidden>
+        </div>
+        <form data-form="scan-paste" autocomplete="off">
+          <div class="field" style="margin-bottom:8px"><label for="scan-text">Or paste the UPI link</label>
+            <div class="inline"><input id="scan-text" placeholder="upi://pay?pa=…" maxlength="400"><button class="btn btn-ghost" type="submit">Use</button></div></div>
+        </form>
+        <p class="hint small muted" id="scan-support"></p>
+        <div id="qr-pay-stage" class="stage" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---------- CONTACTS ---------- -->
+  <section class="page" id="tab-contacts" hidden>
+    <h2>Contacts</h2>
+    <p class="lead">Save people by name. The mobile number links them to their JavaPay account, so you can say "Pay Priya".</p>
+    <div class="grid2">
+      <div class="card">
+        <h3>Add a contact</h3>
+        <form data-form="contact-add" autocomplete="off">
+          <div class="field"><label for="c-name">Name</label><input id="c-name" required maxlength="50"></div>
+          <div class="field"><label for="c-phone">Mobile number</label><input id="c-phone" inputmode="numeric" required maxlength="10" placeholder="10 digits"></div>
+          <button class="btn btn-navy btn-block" type="submit">Save contact</button>
+        </form>
+      </div>
+      <div class="card"><h3>Your contacts</h3><ul class="list" id="contact-list"></ul></div>
+    </div>
+  </section>
+
+  <!-- ---------- SPLIT ---------- -->
+  <section class="page" id="tab-split" hidden>
+    <h2>Split bills</h2>
+    <p class="lead">Everyone, including you, pays an equal share. Friends get a request and pay it with their own PIN.</p>
+    <div class="ai-bar">
+      <h3>✨ Split with AI</h3>
+      <p>Example: "Split 900 among me, Arun, Meena for dinner"</p>
+      <form data-form="ai" autocomplete="off">
+        <input id="split-ai-input" placeholder="Split 900 among me, Arun, Meena for dinner" maxlength="200" aria-label="Describe a split">
+        <button class="btn btn-gold" type="submit">Go</button>
+      </form>
+    </div>
+    <div class="grid2">
+      <div>
+        <div class="card">
+          <h3>Or split manually</h3>
+          <form data-form="split-create" autocomplete="off">
+            <div class="row">
+              <div class="field"><label for="split-total">Total (₹)</label><input id="split-total" type="number" inputmode="decimal" min="0.01" step="0.01" required></div>
+              <div class="field"><label for="split-note">What for</label><input id="split-note" maxlength="60" placeholder="dinner"></div>
+            </div>
+            <div class="field"><label>Split with</label><div id="split-people" class="people"></div><p class="hint" id="split-calc"></p></div>
+            <button class="btn btn-navy btn-block" type="submit">Send requests</button>
+          </form>
+        </div>
+        <div id="split-stage" class="stage" aria-live="polite"></div>
+      </div>
+      <div class="stack">
+        <div class="card"><h3>Requests for you</h3><ul class="list" id="split-owed"></ul></div>
+        <div class="card"><h3>Bills you split</h3><ul class="list" id="split-created"></ul></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---------- INSIGHTS ---------- -->
+  <section class="page" id="tab-insights" hidden>
+    <h2>Spending insights</h2>
+    <p class="lead" id="in-month"></p>
+    <div class="grid2">
+      <div class="stack">
+        <div class="card">
+          <h3>Monthly budget</h3>
+          <form data-form="budget" class="inline" autocomplete="off">
+            <input id="budget-amount" type="number" inputmode="decimal" min="0" step="1" placeholder="Set a limit in ₹ (0 = off)" aria-label="Monthly budget">
+            <button class="btn btn-navy" type="submit">Save</button>
+          </form>
+          <div id="budget-meter" class="meter" hidden><div></div></div>
+          <p class="small muted" id="budget-text"></p>
+        </div>
+        <div class="card"><h3>Where your money went</h3><div id="in-cats"></div></div>
+        <div class="card"><h3>Top people you paid</h3><ul class="list" id="in-payees"></ul></div>
+      </div>
+      <div class="stack">
+        <div class="card"><h3>Last 6 months</h3><div class="cols" id="in-months"></div></div>
+        <div class="card">
+          <h3>Statement (PDF)</h3>
+          <form data-form="statement">
+            <div class="row">
+              <div class="field"><label for="st-from">From</label><input id="st-from" type="date" required></div>
+              <div class="field"><label for="st-to">To</label><input id="st-to" type="date" required></div>
+            </div>
+            <button class="btn btn-gold btn-block" type="submit">Download statement</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---------- HISTORY ---------- -->
+  <section class="page" id="tab-history" hidden>
+    <h2>Transaction history</h2>
+    <p class="lead">You can undo a payment for 30 seconds after sending it, if the receiver has not spent it.</p>
+    <div class="filters" role="group" aria-label="Filter">
+      <button class="pill" data-action="filter" data-filter="all" aria-pressed="true">All</button>
+      <button class="pill" data-action="filter" data-filter="debit" aria-pressed="false">Sent</button>
+      <button class="pill" data-action="filter" data-filter="credit" aria-pressed="false">Received</button>
+      <button class="pill" data-action="filter" data-filter="flagged" aria-pressed="false">Flagged</button>
+    </div>
+    <div class="card"><ul class="list" id="history-list"></ul></div>
+  </section>
+
+  <!-- ---------- Genie ---------- -->
+  <button class="genie-btn" id="genie-btn" data-action="genie-toggle" aria-label="Open the Genie assistant">🪔</button>
+  <aside class="genie" id="genie" hidden aria-label="Genie assistant">
+    <header><span>🧞</span><b>Genie</b><button data-action="genie-toggle" aria-label="Close">✕</button></header>
+    <div class="msgs" id="genie-msgs" aria-live="polite"></div>
+    <form data-form="genie" autocomplete="off"><input id="genie-input" placeholder="Pay 200 to Arun…" maxlength="200" aria-label="Ask Genie"><button class="btn btn-gold btn-sm" type="submit">Send</button></form>
+  </aside>
+</div>
+
+<!-- ============================ MODALS ============================ -->
+<div class="overlay" id="modal-pin" hidden role="dialog" aria-modal="true" aria-labelledby="pin-title">
+  <form class="modal" data-form="pin" autocomplete="off">
+    <h3 id="pin-title">Enter UPI PIN</h3>
+    <p class="lead" id="pin-detail"></p>
+    <div class="field"><input id="pin-input" class="pin-input" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" aria-label="UPI PIN" required></div>
+    <p class="err" id="pin-error" role="alert"></p>
+    <div class="actions"><button class="btn btn-gold" type="submit" style="flex:1">Confirm</button><button class="btn btn-ghost" type="button" data-action="pin-cancel">Cancel</button></div>
+  </form>
+</div>
+
+<div class="overlay" id="modal-add" hidden role="dialog" aria-modal="true" aria-labelledby="add-title">
+  <form class="modal" data-form="add-money">
+    <button class="x" type="button" data-action="close-modal" aria-label="Close">✕</button>
+    <h3 id="add-title">Add simulated money</h3>
+    <p class="lead">Up to ₹10,000 at a time. It is not real money.</p>
+    <div class="field"><label for="add-amount">Amount (₹)</label><input id="add-amount" type="number" inputmode="decimal" min="1" step="0.01" required></div>
+    <button class="btn btn-gold btn-block" type="submit">Add money</button>
+  </form>
+</div>
+
+<div class="overlay" id="modal-withdraw" hidden role="dialog" aria-modal="true" aria-labelledby="wd-title">
+  <form class="modal" data-form="withdraw" autocomplete="off">
+    <button class="x" type="button" data-action="close-modal" aria-label="Close">✕</button>
+    <h3 id="wd-title">Withdraw to bank</h3>
+    <p class="lead">A simulated withdrawal. Confirm with your UPI PIN.</p>
+    <div class="field"><label for="wd-amount">Amount (₹)</label><input id="wd-amount" type="number" inputmode="decimal" min="1" step="0.01" required></div>
+    <div class="field"><label for="wd-pin">UPI PIN</label><input id="wd-pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" required></div>
+    <button class="btn btn-gold btn-block" type="submit">Withdraw</button>
+  </form>
+</div>
+
+<div class="overlay" id="modal-settings" hidden role="dialog" aria-modal="true" aria-labelledby="set-title">
+  <div class="modal">
+    <button class="x" type="button" data-action="close-modal" aria-label="Close">✕</button>
+    <h3 id="set-title">Security settings</h3>
+    <p class="lead">Changing your password signs you out on other devices.</p>
+    <form data-form="change-pw" autocomplete="off" style="margin-bottom:22px">
+      <div class="field"><label for="cp-old">Current password</label><input id="cp-old" type="password" autocomplete="current-password" required></div>
+      <div class="field"><label for="cp-new">New password</label><input id="cp-new" type="password" autocomplete="new-password" required minlength="8"></div>
+      <button class="btn btn-navy btn-block" type="submit">Change password</button>
+    </form>
+    <form data-form="change-pin" autocomplete="off">
+      <div class="row">
+        <div class="field"><label for="pin-old">Current PIN</label><input id="pin-old" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" required></div>
+        <div class="field"><label for="pin-new">New PIN</label><input id="pin-new" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" required></div>
+      </div>
+      <button class="btn btn-navy btn-block" type="submit">Change UPI PIN</button>
+    </form>
+  </div>
+</div>
+
+<script src="/app.js" defer></script>
+</body>
+</html>

@@ -1,20 +1,10 @@
-# Compiled Java
-*.class
-out/
-
-# SQLite databases (hold user data: never commit)
-*.db
-*.db-shm
-*.db-wal
-data/
-
-# IDE & OS files
-.idea/
-.vscode/
-*.iml
-.DS_Store
-Thumbs.db
-*.swp
-
-# Secrets
-.env
+# Default ignored files
+/shelf/
+/workspace.xml
+# Editor-based HTTP Client requests
+/httpRequests/
+# Ignored default folder with query files
+/queries/
+# Datasource local storage ignored files
+/dataSources/
+/dataSources.local.xml
