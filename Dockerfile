@@ -17,7 +17,7 @@ COPY *.java ./
 # Copy frontend
 # Copy frontend
 COPY index.html ./web/index.html
-COPY styles ./web/styles
+COPY style.css ./web/style.css
 COPY app.js ./web/app.js
 
 # Compile application
