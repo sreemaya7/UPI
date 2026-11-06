@@ -401,83 +401,106 @@
   }
 
   // ------------------------------------------------------------------ QR
-  let scan = { stream: null, timer: null };
-  const detectorOk = () => 'BarcodeDetector' in window;
+// ------------------------------------------------------------------ QR
+let scan = { scanner: null, running: false };
 
-  function stopScan() {
-    if (scan.timer) clearInterval(scan.timer);
-    if (scan.stream) scan.stream.getTracks().forEach(t => t.stop());
-    scan = { stream: null, timer: null };
-    const stage = $('#scan-stage');
-    if (stage) stage.replaceChildren();
-    const start = $('#scan-start'), stop = $('#scan-stop');
-    if (start) start.hidden = false;
-    if (stop) stop.hidden = true;
+function stopScan() {
+  const scanner = scan.scanner;
+  scan = { scanner: null, running: false };
+
+  const stage = $('#scan-stage');
+  if (stage) stage.replaceChildren();
+
+  const start = $('#scan-start');
+  const stop = $('#scan-stop');
+
+  if (start) start.hidden = false;
+  if (stop) stop.hidden = true;
+
+  if (scanner) {
+    scanner.stop()
+      .catch(() => {})
+      .finally(() => scanner.clear().catch(() => {}));
+  }
+}
+
+async function startScan() {
+  if (!window.Html5Qrcode) {
+    toast('QR scanner library could not be loaded. Refresh the page.', 'bad');
+    return;
   }
 
-  async function startScan() {
-    if (!detectorOk() || !navigator.mediaDevices?.getUserMedia) {
-      toast('Live scanning is not supported in this browser. Upload a QR image or paste the link instead.', 'bad');
-      return;
-    }
-    const detector = new BarcodeDetector({ formats: ['qr_code'] });
-    try { scan.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false }); }
-    catch { toast('Camera permission was denied.', 'bad'); return; }
-    const video = h('video', { playsinline: true, muted: true, 'aria-label': 'Camera preview' });
-    video.srcObject = scan.stream;
-    await video.play().catch(() => {});
-    $('#scan-stage').replaceChildren(h('div', { class: 'scan-box' }, video));
+  const stage = $('#scan-stage');
+  const reader = h('div', { id: 'qr-reader' });
+
+  stage.replaceChildren(reader);
+
+  const scanner = new Html5Qrcode('qr-reader');
+  scan = { scanner, running: false };
+
+  try {
+    await scanner.start(
+      { facingMode: 'environment' },
+      {
+        fps: 10,
+        qrbox: { width: 250, height: 250 }
+      },
+      rawValue => {
+        if (!scan.running) return;
+
+        if (!/^upi:\/\//i.test(rawValue)) {
+          toast('This QR code is not a valid UPI payment code.', 'bad');
+          return;
+        }
+
+        stopScan();
+        guarded(() => handleScanned(rawValue))();
+      },
+      () => {}
+    );
+
+    scan.running = true;
     $('#scan-start').hidden = true;
     $('#scan-stop').hidden = false;
-    scan.timer = setInterval(async () => {
-      if (video.readyState < 2) return;
-      try {
-        const codes = await detector.detect(video);
-        const hit = codes.find(c => /^upi:\/\//i.test(c.rawValue));
-        if (hit) { stopScan(); guarded(() => handleScanned(hit.rawValue))(); }
-      } catch { /* keep trying */ }
-    }, 300);
+
+  } catch (error) {
+    stopScan();
+    toast(
+      'Could not open camera. Check browser camera permission.',
+      'bad'
+    );
+    console.error('Camera error:', error);
+  }
+}
+
+async function scanImage(file) {
+  if (!file) return;
+
+  if (!window.Html5Qrcode) {
+    throw new Error('QR scanner library could not be loaded.');
   }
 
-  async function scanImage(file) {
-    if (!file) return;
-    if (!detectorOk()) { toast('Reading QR images is not supported in this browser. Paste the UPI link instead.', 'bad'); return; }
-    const bmp = await createImageBitmap(file);
-    const codes = await new BarcodeDetector({ formats: ['qr_code'] }).detect(bmp);
-    if (!codes.length) throw new Error('No QR code found in that image.');
-    await handleScanned(codes[0].rawValue);
-  }
+  const stage = $('#scan-stage');
 
-  async function handleScanned(raw) {
-    const r = await api('POST', '/api/qr/resolve', { payload: raw });
-    const stage = $('#qr-pay-stage');
-    const key = uuid();
-    const amountInput = h('input', { type: 'number', inputmode: 'decimal', min: '0.01', step: '0.01', 'aria-label': 'Amount', style: 'padding:8px;border:1.5px solid var(--line);border-radius:8px;width:140px' });
-    const noteInput = h('input', { maxlength: '60', 'aria-label': 'Note', placeholder: 'optional', style: 'padding:8px;border:1.5px solid var(--line);border-radius:8px;width:100%' });
-    const alerts = (r.flags || []).map(f => ({ kind: 'warn', text: '⚠ ' + f }));
-    if (r.fixedAmount && r.balance < r.amount) alerts.push({ kind: 'bad', text: `Not enough balance (you have ${inr(r.balance)}).` });
-    const rows = [['To', h('span', {}, r.payee.name, h('br'), h('span', { class: 'mono muted small' }, r.payee.upiId))],
-      ['Amount', r.fixedAmount ? h('span', { class: 'big-amt' }, inr(r.amount)) : amountInput],
-      ['Note', r.fixedAmount ? (r.note || '—') : noteInput]];
-    if (r.expiresAt) rows.push(['Valid', h('span', { 'data-expires': r.expiresAt }, '')]);
-    setStage(stage, previewCard({
-      title: 'Scanned QR payment', rows, alerts,
-      disabled: r.fixedAmount && r.balance < r.amount,
-      onCancel: () => setStage(stage, null),
-      onConfirm: async () => {
-        const amount = r.fixedAmount ? r.amount : amountInput.value;
-        if (!amount) throw new Error('Enter an amount to pay.');
-        const pin = await askPin('Approve payment', `${inr(amount)} to ${r.payee.name}`);
-        if (!pin) return;
-        const body = r.qrToken ? { qrToken: r.qrToken, pin, idempotencyKey: key } : { upiId: r.payee.upiId, amount: String(amount), note: noteInput.value, pin, idempotencyKey: key };
-        if (r.qrToken && !r.fixedAmount) { body.amount = String(amount); body.note = noteInput.value; }
-        const res = await api('POST', '/api/pay', body);
-        setStage(stage, successCard(res, `${inr(res.amount)} sent to ${res.payee}`));
-        refreshMe();
-      },
-    }));
-  }
+  stage.replaceChildren(h('div', { id: 'qr-reader' }));
 
+  const scanner = new Html5Qrcode('qr-reader');
+
+  try {
+    const rawValue = await scanner.scanFile(file, true);
+
+    if (!/^upi:\/\//i.test(rawValue)) {
+      throw new Error('This image does not contain a valid UPI payment QR code.');
+    }
+
+    await handleScanned(rawValue);
+  } catch (error) {
+    throw new Error(error.message || 'Could not read the QR image.');
+  } finally {
+    scanner.clear().catch(() => {});
+    stage.replaceChildren();
+  }
+}
   // ------------------------------------------------------------------ split
   async function loadSplit() {
     const [r] = await Promise.all([api('GET', '/api/split'), state.contacts.length ? null : loadContacts()]);
