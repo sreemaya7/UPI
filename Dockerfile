@@ -19,6 +19,8 @@ COPY index.html ./index.html
 COPY style.css ./web/style.css
 COPY app.js ./web/app.js
 
+COPY tests/api_test.py ./tests/
+COPY tests/ui_test.js ./tests/
 # Compile application
 RUN mkdir -p out data web \
     && cp index.html web/index.html \
