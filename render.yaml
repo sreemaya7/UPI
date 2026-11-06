@@ -4,15 +4,20 @@ services:
     runtime: docker
     dockerfilePath: ./Dockerfile
     branch: main
-    plan: free
+    plan: starter
     healthCheckPath: /api/health
+
+    disk:
+      name: javabank-data
+      mountPath: /app/data
+      sizeGB: 1
+
     envVars:
       - key: PORT
         value: 8080
-      # Signs login tokens and peppers password/PIN hashes. Render generates it once; keep it stable.
+
       - key: APP_SECRET
         generateValue: true
-      # Optional: set in the Render dashboard to use Claude for parsing "Pay 300 to Priya".
-      # Without it the app uses its built-in rule-based parser.
+
       - key: ANTHROPIC_API_KEY
         sync: false
