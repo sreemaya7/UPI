@@ -399,17 +399,37 @@ public class Main {
 
     // ================================================================== contacts
 
-    static Object listContacts(Ctx c) throws Exception {
-        return Db.tx(cn -> {
-            List<Map<String, Object>> out = new ArrayList<>();
-            try (PreparedStatement ps = cn.prepareStatement("SELECT c.id,c.name,c.phone,u.upi_id FROM contacts c LEFT JOIN users u ON u.phone=c.phone WHERE c.owner_id=? ORDER BY c.name COLLATE NOCASE")) {
-                ps.setLong(1, c.user.id());
-                ResultSet rs = ps.executeQuery();
-                while (rs.next()) out.add(Json.obj("id", rs.getLong(1), "name", rs.getString(2), "phone", rs.getString(3), "upiId", rs.getString(4), "registered", rs.getString(4) != null));
+
+static Object listContacts(Ctx c) throws Exception {
+    return Db.tx(cn -> {
+        List<Map<String, Object>> out = new ArrayList<>();
+
+        try (PreparedStatement ps = cn.prepareStatement(
+                "SELECT c.id,c.name,c.phone,u.upi_id " +
+                "FROM contacts c " +
+                "LEFT JOIN users u ON u.phone=c.phone " +
+                "WHERE c.owner_id=? " +
+                "ORDER BY LOWER(c.name), c.name"
+        )) {
+            ps.setLong(1, c.user.id());
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                out.add(Json.obj(
+                    "id", rs.getLong(1),
+                    "name", rs.getString(2),
+                    "phone", rs.getString(3),
+                    "upiId", rs.getString(4),
+                    "registered", rs.getString(4) != null
+                ));
             }
-            return Json.obj("contacts", out);
-        });
-    }
+        }
+
+        return Json.obj("contacts", out);
+    });
+}
+
 
     static Object addContact(Ctx c) throws Exception {
         String name = c.str("name", 60), phone = c.str("phone", 15);
