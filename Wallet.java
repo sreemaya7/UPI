@@ -462,8 +462,13 @@ final class Wallet {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) byCat.add(Json.obj("category", rs.getString(1), "amount", money(rs.getLong(2))));
         }
-        try (PreparedStatement ps = c.prepareStatement("SELECT u.name, SUM(t.amount_paise) s, COUNT(*) n FROM txns t JOIN users u ON u.id=t.to_user WHERE t.from_user=? AND t.type='TRANSFER' AND t.status='SUCCESS' AND t.created_at>=? AND t.created_at<? GROUP BY t.to_user ORDER BY s DESC LIMIT 5")) {
-            ps.setLong(1, me.id()); ps.setLong(2, from); ps.setLong(3, to);
+try (PreparedStatement ps = c.prepareStatement(
+    "SELECT u.name, SUM(t.amount_paise) s, COUNT(*) n " +
+    "FROM txns t JOIN users u ON u.id=t.to_user " +
+    "WHERE t.from_user=? AND t.type='TRANSFER' " +
+    "AND t.status='SUCCESS' AND t.created_at>=? AND t.created_at<? " +
+    "GROUP BY t.to_user, u.name ORDER BY s DESC LIMIT 5"
+)) {ps.setLong(1, me.id()); ps.setLong(2, from); ps.setLong(3, to);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) topPayees.add(Json.obj("name", rs.getString(1), "amount", money(rs.getLong(2)), "count", rs.getInt(3)));
         }
