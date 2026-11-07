@@ -9,28 +9,46 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%8F%A6%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/style.css">
 </head>
 <body>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-<!-- ============================ SIGN IN / REGISTER ============================ -->
+<!-- ============================ PUBLIC LANDING + SIGN IN ============================ -->
 <main id="view-auth" class="auth">
-  <section class="auth-left">
-    <div class="logo" aria-hidden="true">🏦</div>
-    <h1>JavaBank Pay</h1>
-    <p class="sub">Secure UPI simulator</p>
-    <ul>
-      <li>Pay by typing: "Pay 300 to Priya for lunch"</li>
-      <li>Names, not numbers: your contacts resolve to UPI IDs</li>
-      <li>Time-limited QR codes you can show or scan</li>
-      <li>Split bills, undo within 30 seconds, spending insights</li>
-      <li>Every payment needs your UPI PIN</li>
-    </ul>
-  </section>
-  <section class="auth-right">
-    <div class="auth-box">
+
+  <header class="site-nav">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">JB</span><span class="brand-name">JavaBank Pay</span></div>
+    <nav class="site-links" aria-label="Sections">
+      <a href="#features">Features</a>
+      <a href="#how">How It Works</a>
+      <a href="#simulator">Security &amp; UPI</a>
+      <a href="#faqs">FAQs</a>
+    </nav>
+    <div class="site-actions">
+      <a class="btn btn-ghost btn-sm" href="#login-card">Login</a>
+      <button class="btn btn-navy btn-sm" type="button" data-action="show-register">Get Started / Register</button>
+    </div>
+  </header>
+
+  <section class="hero-public">
+    <div class="hero-copy">
+      <span class="pill-badge">⚡ Powered by Instant UPI 2.0 &amp; Java Security Engine</span>
+      <h1>Your Payments, Made Simple.<span class="grad">Simple. Secure. Seamless.</span></h1>
+      <p class="lead">Experience next-generation digital banking. Send money to any UPI ID or phone number, scan any QR code, track spending, and manage your account in one place.</p>
+      <div class="cta-row">
+        <button class="btn btn-navy" type="button" data-action="show-register">Create Free Account →</button>
+        <a class="btn btn-ghost" href="#simulator">Explore Live Demo</a>
+      </div>
+      <ul class="trust-row">
+        <li><span class="check">✓</span>Simulation only, no real money</li>
+        <li><span class="check">✓</span>No hidden fees</li>
+        <li><span class="check">✓</span>Every payment needs your UPI PIN</li>
+      </ul>
+    </div>
+
+    <div class="login-card" id="login-card">
       <form id="login-form" data-form="login" autocomplete="on">
         <h2>Welcome back</h2>
         <p class="lead">Sign in with your mobile number or account number.</p>
@@ -56,74 +74,196 @@
       <p class="sim-note">Simulation only. No real money, bank or UPI network is involved.</p>
     </div>
   </section>
+
+  <section class="section" id="features">
+    <div class="section-head">
+      <span class="eyebrow">Why choose us</span>
+      <h2>Why Choose JavaBank Pay?</h2>
+      <p>Built on a Java backend for fast, safe transfers, with the same controls you would expect from a real UPI app.</p>
+    </div>
+    <div class="feature-grid">
+      <article class="feature-card"><span class="f-ico">⚡</span><h3>1. Lightning Fast UPI Transfers</h3><p>Send money to mobile numbers or UPI IDs in seconds. Each payment is written atomically to the ledger.</p><div class="f-foot"><span>Atomic ledger writes</span><b>Instant</b></div></article>
+      <article class="feature-card"><span class="f-ico">▦</span><h3>2. Scan &amp; Pay Any QR</h3><p>Scan a code with your camera, upload an image, or paste a UPI link. Amount codes are read from the server, not the QR text.</p><div class="f-foot"><span>Single-use codes</span><b>Tamper-safe</b></div></article>
+      <article class="feature-card"><span class="f-ico">👥</span><h3>3. Smart Contact Management</h3><p>Save people by name. Their mobile number links to a JavaPay account, so you can say "Pay Priya".</p><div class="f-foot"><span>Fuzzy name matching</span><b>Your contacts only</b></div></article>
+      <article class="feature-card"><span class="f-ico">📊</span><h3>4. Deep Financial Analytics</h3><p>Monthly spend by category, a six-month chart, top payees, a monthly budget with alerts, and a downloadable PDF statement.</p><div class="f-foot"><span>PDF statements</span><b>Automatic insights</b></div></article>
+      <article class="feature-card"><span class="f-ico">🛡</span><h3>5. Bank-Grade Security</h3><p>PBKDF2 password hashing, signed sessions, a UPI PIN for every payment, lockouts after wrong attempts, and strict security headers.</p><div class="f-foot"><span>PBKDF2 + signed sessions</span><b>PIN per payment</b></div></article>
+      <article class="feature-card"><span class="f-ico">🎧</span><h3>6. Genie Assistant</h3><p>Ask Genie to pay, split, check your balance or explain undo and limits. It always shows a confirmation before any money moves.</p><div class="f-foot"><span>Confirms first</span><b>Always on</b></div></article>
+    </div>
+  </section>
+
+  <section class="section section-alt" id="how">
+    <div class="section-head">
+      <span class="eyebrow">Get started</span>
+      <h2>Get Started in 3 Simple Steps</h2>
+      <p>From registration to your first simulated payment in about two minutes.</p>
+    </div>
+    <div class="steps">
+      <article class="step-card"><span class="step-no">01</span><h3>Register in 2 minutes</h3><p>Enter your name, mobile number, a password and a UPI PIN. You receive ₹1,000 of simulated money.</p></article>
+      <article class="step-card"><span class="step-no">02</span><h3>Get your UPI ID</h3><p>Your mobile number becomes your UPI ID, for example mobile@javapay, for direct transfers.</p></article>
+      <article class="step-card"><span class="step-no">03</span><h3>Scan, send &amp; receive</h3><p>Type a payment such as "Pay 300 to Priya for lunch", scan a QR code, or split a bill with friends.</p></article>
+    </div>
+  </section>
+
+  <section class="section" id="simulator">
+    <div class="sim-grid">
+      <div class="sim-copy">
+        <span class="eyebrow">Interactive simulator</span>
+        <h2>Test the JavaBank Pay Flow</h2>
+        <p class="lead">Every payment shows a review card first: who gets it, how much, and any fraud warnings. Nothing moves until you approve it with your UPI PIN.</p>
+        <ul class="check-list">
+          <li><span class="check">✓</span>Simulated transfers only, with no real money</li>
+          <li><span class="check">✓</span>Undo any payment within 30 seconds, if it has not been spent</li>
+          <li><span class="check">✓</span>Large or unusual payments are flagged before you confirm</li>
+        </ul>
+      </div>
+      <div class="sim-card">
+        <h3>Instant Payment Simulator</h3>
+        <span class="badge b-info">Demo mode</span>
+        <label class="sim-label">Recipient UPI ID or phone</label>
+        <div class="sim-input">merchant@javapay</div>
+        <div class="sim-row"><span>Transfer amount (₹)</span><b>₹5,000</b></div>
+        <div class="sim-box">
+          <div class="sim-row"><span>Transfer fee</span><b class="ok">₹0.00 (free)</b></div>
+          <div class="sim-row"><span>Estimated processing time</span><b>&lt; 0.4 seconds</b></div>
+          <div class="sim-row total"><span>Total deducted</span><b>₹5,000.00</b></div>
+        </div>
+        <button class="btn btn-navy btn-block" type="button" data-action="show-register">Create an account to try it</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt" id="faqs">
+    <div class="section-head">
+      <span class="eyebrow">Clear answers</span>
+      <h2>Frequently Asked Questions</h2>
+      <p>Everything you need to know about JavaBank Pay security, limits and UPI rules.</p>
+    </div>
+    <div class="faq-list">
+      <details><summary>How secure is JavaBank Pay?</summary><p>Passwords and UPI PINs are hashed with PBKDF2 and never stored in plain text. Sessions are signed tokens that expire, every payment needs your UPI PIN, and five wrong PIN tries lock it for 15 minutes.</p></details>
+      <details><summary>Can I send money to non-JavaBank UPI IDs?</summary><p>Not in this simulator. You can pay only other JavaBank Pay users, because there is no real UPI network behind it.</p></details>
+      <details><summary>What are the daily transaction limits?</summary><p>₹1,00,000 per payment and ₹1,00,000 per day. Simulated top-ups are capped at ₹10,000 at a time.</p></details>
+      <details><summary>What if a payment is sent by mistake?</summary><p>You can undo a payment for 30 seconds after sending it, as long as the receiver has not spent the money. Use the Undo button in History or on the confirmation card.</p></details>
+    </div>
+  </section>
+
+  <footer class="public-footer">
+    <div class="pf-grid">
+      <div>
+        <div class="brand"><span class="brand-mark" aria-hidden="true">JB</span><span class="brand-name">JavaBank Pay</span></div>
+        <p>A UPI payment simulator built on a Java backend. All money is fake.</p>
+      </div>
+      <div>
+        <h4>Product</h4>
+        <a href="#features">Features</a><a href="#how">How It Works</a><a href="#simulator">Simulator</a>
+      </div>
+      <div>
+        <h4>Support</h4>
+        <a href="#faqs">FAQs</a><a href="#login-card">Sign in</a>
+      </div>
+    </div>
+    <p class="pf-copy">© JavaBank Pay. Simulation only. No real money, bank or UPI network is involved.</p>
+  </footer>
 </main>
 
 <!-- ============================ APP ============================ -->
 <div id="view-app" hidden>
   <div class="sim-banner">Simulation mode: all money here is fake</div>
-  <header class="topbar">
-    <div class="brand">JavaBank Pay<i></i></div>
-    <nav class="tabs" aria-label="Main">
-      <button class="tab" data-action="tab" data-tab="home">Home</button>
-      <button class="tab" data-action="tab" data-tab="pay">Pay</button>
-      <button class="tab" data-action="tab" data-tab="qr">QR</button>
-      <button class="tab" data-action="tab" data-tab="contacts">Contacts</button>
-      <button class="tab" data-action="tab" data-tab="split">Split</button>
-      <button class="tab" data-action="tab" data-tab="insights">Insights</button>
-      <button class="tab" data-action="tab" data-tab="history">History</button>
-    </nav>
-    <div class="who">
-      <div class="avatar" id="nav-avatar" aria-hidden="true">--</div>
-      <span class="name" id="nav-name" style="color:#fff;font-size:14px"></span>
-      <button class="btn btn-sm" data-action="open-settings">Settings</button>
-      <button class="btn btn-sm" data-action="logout">Sign out</button>
-    </div>
-  </header>
 
-  <!-- ---------- HOME ---------- -->
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="App navigation">
+      <div class="brand side-brand"><span class="brand-mark" aria-hidden="true">JB</span><span class="brand-name">JavaBank Pay</span></div>
+      <div class="side-status"><span class="dot-live"></span>UPI live · 99.98% uptime</div>
+
+      <nav class="tabs" aria-label="Main">
+        <button class="tab" data-action="tab" data-tab="home"><span class="t-ico">▣</span>Dashboard</button>
+        <button class="tab" data-action="tab" data-tab="pay"><span class="t-ico">➤</span>Send Money</button>
+        <button class="tab" data-action="tab" data-tab="qr"><span class="t-ico">▦</span>Scan &amp; Pay</button>
+        <button class="tab" data-action="tab" data-tab="contacts"><span class="t-ico">👥</span>Contacts</button>
+        <button class="tab" data-action="tab" data-tab="split"><span class="t-ico">➗</span>Split</button>
+        <button class="tab" data-action="tab" data-tab="insights"><span class="t-ico">📊</span>Insights</button>
+        <button class="tab" data-action="tab" data-tab="history"><span class="t-ico">🧾</span>Transactions</button>
+      </nav>
+
+      <div class="side-foot">
+        <button class="side-link" type="button" data-action="genie-toggle"><span class="t-ico">?</span>Help &amp; Support</button>
+      </div>
+    </aside>
+
+    <div class="main-col">
+      <header class="topbar">
+        <div class="top-search" aria-hidden="true">Search transactions, contacts, UPI ID…</div>
+        <div class="who">
+          <div class="avatar" id="nav-avatar" aria-hidden="true">--</div>
+          <span class="name" id="nav-name"></span>
+          <button class="btn btn-sm" type="button" data-action="open-settings">Settings</button>
+          <button class="btn btn-sm" type="button" data-action="logout">Sign out</button>
+        </div>
+      </header>
+
+      <main class="content">
+
+  <!-- ---------- HOME (dashboard) ---------- -->
   <section class="page" id="tab-home" hidden>
-    <div class="hero">
+    <div class="page-head">
       <div>
         <h2 id="home-name">Hello</h2>
         <p class="meta" id="home-date"></p>
       </div>
-      <div>
-        <div class="bal-label">Wallet balance</div>
+    </div>
+
+    <div class="balance-card">
+      <div class="bc-main">
+        <div class="bc-label">JavaBank Primary Savings</div>
+        <div class="bal-label">Available instant balance</div>
         <div class="bal" id="home-bal">₹0.00</div>
-        <div class="upi"><span class="mono" id="home-upi"></span><button class="copy" data-action="copy-upi">Copy</button></div>
+        <div class="upi"><span class="upi-label">Primary UPI ID</span><span class="mono" id="home-upi"></span><button class="copy" type="button" data-action="copy-upi">Copy</button></div>
       </div>
+      <span class="active-pill">● Active UPI</span>
     </div>
-    <div class="tiles">
-      <button class="tile" data-action="tab" data-tab="pay"><span class="ico">✨</span><b>Pay with AI</b><span class="d">Type it, confirm it</span></button>
-      <button class="tile" data-action="tab" data-tab="qr"><span class="ico">▦</span><b>Scan / Show QR</b><span class="d">Time-limited codes</span></button>
-      <button class="tile" data-action="tab" data-tab="split"><span class="ico">➗</span><b>Split a bill</b><span class="d">Share the cost</span></button>
-      <button class="tile" data-action="open-add"><span class="ico">＋</span><b>Add money</b><span class="d">Simulated top-up</span></button>
-      <button class="tile" data-action="open-withdraw"><span class="ico">↗</span><b>Withdraw</b><span class="d">Needs your PIN</span></button>
-    </div>
-    <div class="grid3" style="margin-bottom:22px">
-      <div class="stat"><div class="l">Spent this month</div><div class="v" id="stat-spent">₹0</div></div>
-      <div class="stat"><div class="l">Received this month</div><div class="v" id="stat-received">₹0</div></div>
+
+    <div class="stats">
+      <div class="stat"><div class="l">Total sent this month</div><div class="v" id="stat-spent">₹0</div></div>
+      <div class="stat"><div class="l">Total received this month</div><div class="v" id="stat-received">₹0</div></div>
       <div class="stat"><div class="l">Flagged payments</div><div class="v" id="stat-flagged">0</div></div>
     </div>
+
+    <h3 class="block-title">Quick banking actions</h3>
+    <div class="tiles">
+      <button class="tile" type="button" data-action="tab" data-tab="pay"><span class="ico">✨</span><b>Pay with AI</b><span class="d">Type it, then confirm</span></button>
+      <button class="tile" type="button" data-action="tab" data-tab="qr"><span class="ico">▦</span><b>Scan / Show QR</b><span class="d">Time-limited codes</span></button>
+      <button class="tile" type="button" data-action="tab" data-tab="split"><span class="ico">➗</span><b>Split a bill</b><span class="d">Share the cost</span></button>
+      <button class="tile" type="button" data-action="open-add"><span class="ico">＋</span><b>Add money</b><span class="d">Simulated top-up</span></button>
+      <button class="tile" type="button" data-action="open-withdraw"><span class="ico">↗</span><b>Withdraw</b><span class="d">Needs your PIN</span></button>
+    </div>
+
     <div id="home-budget"></div>
+
     <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-        <h3 style="margin:0">Recent activity</h3>
-        <button class="btn btn-ghost btn-sm" data-action="tab" data-tab="history">View all</button>
+      <div class="card-head">
+        <h3>Recent transactions</h3>
+        <button class="btn btn-ghost btn-sm" type="button" data-action="tab" data-tab="history">View all</button>
       </div>
       <ul class="list" id="home-recent"></ul>
+    </div>
+
+    <div class="security-banner">
+      <span class="sec-ico" aria-hidden="true">🛡</span>
+      <div>
+        <h4>Security first</h4>
+        <p>Never share your UPI PIN, OTP or password with anyone. JavaBank Pay staff will never ask for them.</p>
+      </div>
+      <button class="btn btn-ghost btn-sm" type="button" data-action="genie-toggle">Ask Genie</button>
     </div>
   </section>
 
   <!-- ---------- PAY ---------- -->
   <section class="page" id="tab-pay" hidden>
-    <h2>Pay someone</h2>
-    <p class="lead">Describe the payment, or fill the form. Nothing moves until you approve it with your UPI PIN.</p>
+    <div class="page-head"><div><h2>Send money</h2><p class="lead">Describe the payment, or fill the form. Nothing moves until you approve it with your UPI PIN.</p></div></div>
     <div class="ai-bar">
       <h3>✨ Pay with AI</h3>
       <p>Names are matched against your contacts. The AI only suggests; you always confirm.</p>
       <form data-form="ai" autocomplete="off">
-        <input id="ai-input" placeholder='Try: Pay 300 to Priya for lunch' maxlength="200" aria-label="Describe a payment">
+        <input id="ai-input" placeholder="Try: Pay 300 to Priya for lunch" maxlength="200" aria-label="Describe a payment">
         <button class="btn btn-gold" type="submit">Go</button>
       </form>
       <div class="chips">
@@ -151,8 +291,7 @@
 
   <!-- ---------- QR ---------- -->
   <section class="page" id="tab-qr" hidden>
-    <h2>QR payments</h2>
-    <p class="lead">Show a code to get paid, or scan one to pay. Codes with an amount expire and work only once.</p>
+    <div class="page-head"><div><h2>Scan &amp; Pay</h2><p class="lead">Show a code to get paid, or scan one to pay. Codes with an amount expire and work only once.</p></div></div>
     <div class="grid2">
       <div class="card">
         <h3>Receive: my QR</h3>
@@ -171,8 +310,8 @@
         <h3>Pay: scan a QR</h3>
         <div id="scan-stage"></div>
         <div class="actions" style="margin-bottom:14px">
-          <button class="btn btn-navy" data-action="scan-start" id="scan-start">Start camera</button>
-          <button class="btn btn-ghost" data-action="scan-stop" id="scan-stop" hidden>Stop camera</button>
+          <button class="btn btn-navy" type="button" data-action="scan-start" id="scan-start">Start camera</button>
+          <button class="btn btn-ghost" type="button" data-action="scan-stop" id="scan-stop" hidden>Stop camera</button>
           <label class="btn btn-ghost" for="scan-file" style="margin:0">Upload QR image</label>
           <input id="scan-file" type="file" accept="image/*" hidden>
         </div>
@@ -188,8 +327,7 @@
 
   <!-- ---------- CONTACTS ---------- -->
   <section class="page" id="tab-contacts" hidden>
-    <h2>Contacts</h2>
-    <p class="lead">Save people by name. The mobile number links them to their JavaPay account, so you can say "Pay Priya".</p>
+    <div class="page-head"><div><h2>Contacts</h2><p class="lead">Save people by name. The mobile number links them to their JavaPay account, so you can say "Pay Priya".</p></div></div>
     <div class="grid2">
       <div class="card">
         <h3>Add a contact</h3>
@@ -205,8 +343,7 @@
 
   <!-- ---------- SPLIT ---------- -->
   <section class="page" id="tab-split" hidden>
-    <h2>Split bills</h2>
-    <p class="lead">Everyone, including you, pays an equal share. Friends get a request and pay it with their own PIN.</p>
+    <div class="page-head"><div><h2>Split bills</h2><p class="lead">Everyone, including you, pays an equal share. Friends get a request and pay it with their own PIN.</p></div></div>
     <div class="ai-bar">
       <h3>✨ Split with AI</h3>
       <p>Example: "Split 900 among me, Arun, Meena for dinner"</p>
@@ -239,8 +376,7 @@
 
   <!-- ---------- INSIGHTS ---------- -->
   <section class="page" id="tab-insights" hidden>
-    <h2>Spending insights</h2>
-    <p class="lead" id="in-month"></p>
+    <div class="page-head"><div><h2>Spending insights</h2><p class="lead" id="in-month"></p></div></div>
     <div class="grid2">
       <div class="stack">
         <div class="card">
@@ -273,21 +409,25 @@
 
   <!-- ---------- HISTORY ---------- -->
   <section class="page" id="tab-history" hidden>
-    <h2>Transaction history</h2>
-    <p class="lead">You can undo a payment for 30 seconds after sending it, if the receiver has not spent it.</p>
+    <div class="page-head"><div><h2>Transactions</h2><p class="lead">You can undo a payment for 30 seconds after sending it, if the receiver has not spent it.</p></div></div>
     <div class="filters" role="group" aria-label="Filter">
-      <button class="pill" data-action="filter" data-filter="all" aria-pressed="true">All</button>
-      <button class="pill" data-action="filter" data-filter="debit" aria-pressed="false">Sent</button>
-      <button class="pill" data-action="filter" data-filter="credit" aria-pressed="false">Received</button>
-      <button class="pill" data-action="filter" data-filter="flagged" aria-pressed="false">Flagged</button>
+      <button class="pill" type="button" data-action="filter" data-filter="all" aria-pressed="true">All</button>
+      <button class="pill" type="button" data-action="filter" data-filter="debit" aria-pressed="false">Sent</button>
+      <button class="pill" type="button" data-action="filter" data-filter="credit" aria-pressed="false">Received</button>
+      <button class="pill" type="button" data-action="filter" data-filter="flagged" aria-pressed="false">Flagged</button>
     </div>
     <div class="card"><ul class="list" id="history-list"></ul></div>
   </section>
 
+      </main>
+      <footer class="app-foot">© JavaBank Pay · Simulation only. No real money, bank or UPI network is involved.</footer>
+    </div>
+  </div>
+
   <!-- ---------- Genie ---------- -->
-  <button class="genie-btn" id="genie-btn" data-action="genie-toggle" aria-label="Open the Genie assistant">🪔</button>
+  <button class="genie-btn" id="genie-btn" type="button" data-action="genie-toggle" aria-label="Open the Genie assistant">🪔</button>
   <aside class="genie" id="genie" hidden aria-label="Genie assistant">
-    <header><span>🧞</span><b>Genie</b><button data-action="genie-toggle" aria-label="Close">✕</button></header>
+    <header><span>🧞</span><b>Genie</b><button type="button" data-action="genie-toggle" aria-label="Close">✕</button></header>
     <div class="msgs" id="genie-msgs" aria-live="polite"></div>
     <form data-form="genie" autocomplete="off"><input id="genie-input" placeholder="Pay 200 to Arun…" maxlength="200" aria-label="Ask Genie"><button class="btn btn-gold btn-sm" type="submit">Send</button></form>
   </aside>
