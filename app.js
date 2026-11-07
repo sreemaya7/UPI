@@ -773,8 +773,10 @@ async function scanImage(file) {
 
   // ------------------------------------------------------------------ boot
   async function boot() {
-    $('#scan-support').textContent = detectorOk() ? '' : 'Live camera scanning needs a browser with QR detection (Chrome or Edge on Android or desktop). Elsewhere, paste the link or upload an image.';
-    const saved = store.get();
+  $('#scan-support').textContent = window.Html5Qrcode
+  ? ''
+  : 'QR scanner library is not loaded. Refresh the page or upload a QR image.';
+     const saved = store.get();
     if (!saved) { showAuth(); return; }
     state.token = saved;
     try {
